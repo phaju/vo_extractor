@@ -63,26 +63,49 @@ func iterate(path string) (int, string) {
                   current_step, ok := steps_array[step_number].(map[string]interface{})
                   if ok {
                     info_vo := get_vo(current_step)
-                    log.Print("Detecting single info")
                     if string(info_vo) != "" {
                       vo_list = append(vo_list, string(info_vo)) 
+                    }
+                  }
+                  // Check for multiple info
+                  info_object_array, ok := current_step["info"].([]interface{})
+                  if ok {
+                    for index := range info_object_array {
+                      current_feedback, ok := info_object_array[index].(map[string]interface{})
+                      if ok{
+                        feedback_vo := get_vo(current_feedback)
+                        if string(feedback_vo) != "" {
+                          vo_list = append(vo_list, string(feedback_vo)) 
+                        }
+                      }
                     }
                   }
                   // Check for question step
                   question_object, ok := current_step["question"].(map[string]interface{})
                   if ok {
                     question_vo := get_vo(question_object)
-                    log.Print("Detecting question")
                     if string(question_vo) != "" {
                       vo_list = append(vo_list, string(question_vo))
+                    }
+                  }
+                  // Check for multiple question
+                  question_object_array, ok := current_step["question"].([]interface{})
+                  if ok {
+                    for index := range question_object_array {
+                      current_feedback, ok := question_object_array[index].(map[string]interface{})
+                      if ok{
+                        feedback_vo := get_vo(current_feedback)
+                        if string(feedback_vo) != "" {
+                          vo_list = append(vo_list, string(feedback_vo)) 
+                        }
+                      }
                     }
                   }
                   // Check for question feedbacks
                   feedback_object, ok := current_step["feedBack"].([]interface{})
                   if ok {
-                    log.Print("Detecting feedbacks")
-                    for feedback_index := range feedback_object {
-                      current_feedback, ok := feedback_object[feedback_index].(map[string]interface{})
+                    for index := range feedback_object {
+                      current_feedback, ok := feedback_object[index].(map[string]interface{})
                       if ok{
                         feedback_vo := get_vo(current_feedback)
                         if string(feedback_vo) != "" {
