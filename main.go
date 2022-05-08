@@ -59,6 +59,7 @@ func iterate(path string) (int, string) {
                 json_data := dat["json"].(map[string]interface{})
                 steps_array := json_data["steps"].([]interface{})
                 for step_number := range steps_array {
+                  // Check for single info step
                   current_step, ok := steps_array[step_number].(map[string]interface{})
                   if ok {
                     info_vo := get_vo(current_step)
@@ -67,6 +68,7 @@ func iterate(path string) (int, string) {
                       vo_list = append(vo_list, string(info_vo)) 
                     }
                   }
+                  // Check for question step
                   question_object, ok := current_step["question"].(map[string]interface{})
                   if ok {
                     question_vo := get_vo(question_object)
@@ -75,14 +77,17 @@ func iterate(path string) (int, string) {
                       vo_list = append(vo_list, string(question_vo))
                     }
                   }
+                  // Check for question feedbacks
                   feedback_object, ok := current_step["feedBack"].([]interface{})
                   if ok {
                     log.Print("Detecting feedbacks")
                     for feedback_index := range feedback_object {
-                      current_feedback := feedback_object[feedback_index].(map[string]interface{})
-                      feedback_vo := get_vo(current_feedback)
-                      if string(feedback_vo) != "" {
-                        vo_list = append(vo_list, string(feedback_vo)) 
+                      current_feedback, ok := feedback_object[feedback_index].(map[string]interface{})
+                      if ok{
+                        feedback_vo := get_vo(current_feedback)
+                        if string(feedback_vo) != "" {
+                          vo_list = append(vo_list, string(feedback_vo)) 
+                        }
                       }
                     }
                   }
