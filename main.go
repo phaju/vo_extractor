@@ -126,6 +126,7 @@ func iterate(path string) (int, string) {
 }
 
 func get_vo(vo_obj map[string]interface{}) []byte {
+    del_list := []string{"<b>", "</b>", "<i>", "</i>"}
     var vo string
     if vo_obj["text"] != nil {
       if audio_location := vo_obj["audioFile"]; audio_location != nil {
@@ -135,6 +136,9 @@ func get_vo(vo_obj map[string]interface{}) []byte {
         }
       }
       vo = vo + vo_obj["text"].(string)
+      for index := range del_list {
+        vo = strings.ReplaceAll(vo, del_list[index], "")
+      }
     }
     return []byte(vo)
 }
