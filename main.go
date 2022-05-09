@@ -16,7 +16,7 @@ func main() {
         log.Fatal(err)
     }
 
-    vo_count, vo_list := iterate(currentDirectory)
+    vo_count, mid, vo_list := iterate(currentDirectory)
 
     f, err := os.Create("Extracted_VO.txt")
     if err != nil {
@@ -26,11 +26,13 @@ func main() {
     defer f.Close()
 
     f.WriteString("Total VOs found: " + fmt.Sprint(vo_count) + "\n")
+    f.WriteString(mid + "\n")
     f.Write([]byte(vo_list))
 }
 
-func iterate(path string) (int, string) {
+func iterate(path string) (int, string, string) {
     var vo_list []string
+    var mid string
     filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
         if err != nil {
             log.Fatalf(err.Error())
@@ -57,6 +59,7 @@ func iterate(path string) (int, string) {
             if dat["_name"] != nil {
               if dat["_name"] == "storyBoard" {
                 json_data := dat["json"].(map[string]interface{})
+                mid = "Game Name : " + json_data["gameName"].(string)
                 steps_array := json_data["steps"].([]interface{})
                 for step_number := range steps_array {
                   // Check for single info step
@@ -122,7 +125,7 @@ func iterate(path string) (int, string) {
         return nil
     })
     sort.Strings(vo_list)
-    return len(vo_list), strings.Join(vo_list, "\n")
+    return len(vo_list), mid, strings.Join(vo_list, "\n")
 }
 
 func get_vo(vo_obj map[string]interface{}) []byte {
