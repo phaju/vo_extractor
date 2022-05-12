@@ -26,7 +26,7 @@ func main() {
     defer f.Close()
 
     f.WriteString("Total VOs found," + fmt.Sprint(vo_count) + "\n")
-    f.WriteString("Game Name," + mid + "\n")
+    f.WriteString("VO ID, English VO Text\n")
     f.Write([]byte(vo_list))
 }
 
