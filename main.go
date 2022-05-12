@@ -18,15 +18,15 @@ func main() {
 
     vo_count, mid, vo_list := iterate(currentDirectory)
 
-    f, err := os.Create("Extracted_VO.txt")
+    f, err := os.Create(mid + "_VO_list.csv")
     if err != nil {
         log.Fatal(err)
     }
 
     defer f.Close()
 
-    f.WriteString("Total VOs found: " + fmt.Sprint(vo_count) + "\n")
-    f.WriteString(mid + "\n")
+    f.WriteString("Total VOs found," + fmt.Sprint(vo_count) + "\n")
+    f.WriteString("Game Name," + mid + "\n")
     f.Write([]byte(vo_list))
 }
 
@@ -59,7 +59,7 @@ func iterate(path string) (int, string, string) {
             if dat["_name"] != nil {
               if dat["_name"] == "storyBoard" {
                 json_data := dat["json"].(map[string]interface{})
-                mid = "Game Name : " + json_data["gameName"].(string)
+                mid = json_data["gameName"].(string)
                 steps_array := json_data["steps"].([]interface{})
                 for step_number := range steps_array {
                   // Check for single info step
@@ -135,10 +135,9 @@ func get_vo(vo_obj map[string]interface{}) []byte {
       if audio_location := vo_obj["audioFile"]; audio_location != nil {
         if path_content := strings.Split(audio_location.(string), "/"); len(path_content) == 3 {
           vo = path_content[2]
-          vo = vo + " : "
         }
       }
-      vo = vo + vo_obj["text"].(string)
+      vo = vo + ",\"" + vo_obj["text"].(string) + "\""
       for index := range del_list {
         vo = strings.ReplaceAll(vo, del_list[index], "")
       }
