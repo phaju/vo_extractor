@@ -133,8 +133,8 @@ func get_vo(vo_obj map[string]interface{}) []byte {
     var vo string
     if vo_obj["text"] != nil {
       if audio_location := vo_obj["audioFile"]; audio_location != nil {
-        if path_content := strings.Split(audio_location.(string), "/"); len(path_content) == 3 {
-          vo = path_content[2]
+        if path_content := strings.Split(audio_location.(string), "/"); len(path_content) > 2 {
+          vo = path_content[len(path_content)-1]
         }
       }
       vo = vo + ",\"" + vo_obj["text"].(string) + "\""
