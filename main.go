@@ -20,8 +20,6 @@ func main() {
 }
 
 func iterate(path string) {
-	var vo_list []string
-	var mid string
 	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatalf(err.Error())
@@ -47,7 +45,8 @@ func iterate(path string) {
 
 				if dat["_name"] != nil {
 					if dat["_name"] == "storyBoard" {
-						log.Print(path)
+						var vo_list []string
+						var mid string
 						json_data := dat["json"].(map[string]interface{})
 						mid = json_data["gameName"].(string)
 
@@ -57,6 +56,17 @@ func iterate(path string) {
 						}
 
 						defer f.Close()
+
+						game_text_array, ok := json_data["gameTexts"].(map[string]interface{})
+						if ok {
+							for key, value := range game_text_array {
+								info_text := ""
+								if value != "" && key != "" {
+									info_text = fmt.Sprintf("%v,\"%v\"", key, value)
+								}
+								vo_list = append(vo_list, info_text)
+							}
+						}
 
 						steps_array := json_data["steps"].([]interface{})
 						for step_number := range steps_array {
@@ -130,7 +140,7 @@ func iterate(path string) {
 }
 
 func get_vo(vo_obj map[string]interface{}) []byte {
-	del_list := []string{"<b>", "</b>", "<i>", "</i>"}
+	deletion_list := []string{"<b>", "</b>", "<i>", "</i>"}
 	var vo string
 	if vo_obj["text"] != nil {
 		if audio_location := vo_obj["audioFile"]; audio_location != nil {
@@ -139,8 +149,8 @@ func get_vo(vo_obj map[string]interface{}) []byte {
 			}
 		}
 		vo = vo + ",\"" + vo_obj["text"].(string) + "\""
-		for index := range del_list {
-			vo = strings.ReplaceAll(vo, del_list[index], "")
+		for index := range deletion_list {
+			vo = strings.ReplaceAll(vo, deletion_list[index], "")
 		}
 	}
 	return []byte(vo)
