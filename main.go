@@ -16,13 +16,18 @@ func main() {
 		log.Fatal(err)
 	}
 
+  err = os.Mkdir("Extracted_VO", 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	iterate(currentDirectory)
 }
 
 func iterate(path string) {
 	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			log.Fatalf(err.Error())
+			log.Fatal(err.Error())
 		}
 		if info.IsDir() == false {
 			if filepath.Ext(info.Name()) == ".json" {
@@ -50,7 +55,7 @@ func iterate(path string) {
 						json_data := dat["json"].(map[string]interface{})
 						mid = json_data["gameName"].(string)
 
-						f, err := os.Create(mid + "_VO_list.csv")
+						f, err := os.Create("Extracted_VO/" + mid + "_VO_list.csv")
 						if err != nil {
 							log.Fatal(err)
 						}
